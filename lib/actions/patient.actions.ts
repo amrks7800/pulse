@@ -2,9 +2,12 @@
 
 import { AppwriteException, ID, Models, Query } from "node-appwrite"
 import {
+  BUCKET_ID,
   DATABASE_ID,
   databases,
+  ENDPOINT,
   PATIENT_COLLECTION_ID,
+  PROJECT_ID,
   storage,
   users,
 } from "../appwrite.config"
@@ -57,24 +60,21 @@ export const registerPatient = async ({
         identificationDocument?.get("fileName") as string
       )
 
-      // TODO: replace with env vars in production
       file = await storage.createFile(
-        "66904efd0012ce962f17", // bucket id
+        BUCKET_ID, // bucket id
         ID.unique(),
         inputFile
       )
     }
 
     const newPatient = await databases.createDocument(
-      "66904e1600309eba275a", // database id
-      "66904e51001757c435c7", // patient collection id
+      DATABASE_ID, // database id
+      PATIENT_COLLECTION_ID, // patient collection id
       ID.unique(),
       {
         ...patient,
         identificationDocumentId: file?.$id || null,
-        identificationDocumentUrl: `${"https://cloud.appwrite.io/v1"}/storage/buckets/${"66904efd0012ce962f17"}/files/${
-          file?.$id
-        }/view?project=${"66904d4f000c2868dcff"}`,
+        identificationDocumentUrl: `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${file?.$id}/view?project=${PROJECT_ID}`,
       }
     )
 
